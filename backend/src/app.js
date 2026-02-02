@@ -7,21 +7,15 @@ import jwt from '@fastify/jwt';
 const buildApp = async (opts = {}) => {
     const app = Fastify(opts);
 
-    app.use(cors(
-        {
-            origin: [
-                "http://52.66.221.25:5173",
-                "http://localhost:5173"
-            ],
-            credentials: true,
-            methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-        }
-    ));
-
     // Core Plugins
     await app.register(helmet);
     await app.register(cors, {
-        origin: process.env.CORS_ORIGIN || '*',
+        origin: [
+            "http://52.66.221.25:5173",
+            "http://localhost:5173",
+            process.env.CORS_ORIGIN
+        ].filter(Boolean),
+        credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
     });
 
