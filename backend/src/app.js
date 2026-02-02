@@ -2,11 +2,10 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
+// import cors from '@fastify/cors';
 
 const buildApp = async (opts = {}) => {
     const app = Fastify(opts);
-
-    const cors = require('cors');
 
     app.use(cors(
         {
