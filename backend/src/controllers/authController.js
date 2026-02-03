@@ -3,11 +3,15 @@ import * as auditService from '../services/auditService.js';
 import { ApiError, ConflictError, AuthorizationError } from '../errors/index.js';
 
 export const register = async (req, reply) => {
-    const { email, password, name, role } = req.body;
+    const { password, role } = req.body;
+    let { email, name } = req.body;
 
     if (!email || !password || !name) {
         throw new ApiError(400, 'Email, password, and name are required');
     }
+
+    email = email.trim().toLowerCase();
+    name = name.trim();
 
     const safeRole = 'CLIENT';
     try {
@@ -32,10 +36,14 @@ export const register = async (req, reply) => {
 };
 
 export const login = async (req, reply) => {
-    const { email, password } = req.body;
+    const { password } = req.body;
+    let { email } = req.body;
+
     if (!email || !password) {
         throw new ApiError(400, 'Email and password are required');
     }
+
+    email = email.trim().toLowerCase();
 
     try {
         const user = await authService.login(email, password);
