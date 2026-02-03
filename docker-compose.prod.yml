@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: lims_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "!@$$PostgreSQL16$$@!"
+      POSTGRES_DB: lims_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    image: ${DOCKER_USERNAME}/lims-backend:latest
+    container_name: lims_backend
+    restart: always
+    environment:
+      PORT: 3168
+      HOST: 0.0.0.0
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: lims_db
+      DB_USER: postgres
+      DB_PASSWORD: "!@$$PostgreSQL16$$@!"
+      # Ensure these are set in .env on the server or added here
+      JWT_SECRET: "production_secret_key_change_me"
+      CORS_ORIGIN: "http://${EC2_HOST}:80"
+    depends_on:
+      - postgres
+
+  frontend:
+    image: ${DOCKER_USERNAME}/lims-frontend:latest
+    container_name: lims_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
