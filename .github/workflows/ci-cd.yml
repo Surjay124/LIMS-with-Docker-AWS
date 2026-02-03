@@ -61,6 +61,9 @@ jobs:
             export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
             export EC2_HOST=${{ secrets.EC2_HOST }}
             
+            # Force remove old containers to avoid name conflicts
+            docker rm -f lims_frontend lims_backend lims_postgres || true
+            
             # Pull latest images
             docker compose -f docker-compose.prod.yml pull
             
