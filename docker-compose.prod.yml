@@ -17,6 +17,7 @@ services:
     environment:
       PORT: 3168
       HOST: 0.0.0.0
+      NODE_ENV: production
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: lims_db
