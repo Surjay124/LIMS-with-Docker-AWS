@@ -69,10 +69,3 @@ jobs:
             
             # Restart services
             docker compose -f docker-compose.prod.yml up -d
-
-            # Wait for backend to be ready (simple sleep or check)
-            sleep 10
-
-            # Run Migrations & Seeds
-            docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate
-            docker compose -f docker-compose.prod.yml exec -T backend npm run db:seed
