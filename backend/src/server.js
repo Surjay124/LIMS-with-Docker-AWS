@@ -25,18 +25,21 @@ const start = async () => {
                 process.env[key] = secrets[key];
             });
 
+            console.log('--- DEBUG: Secrets Keys Loaded:', Object.keys(secrets));
+            console.log('--- DEBUG: DB_PASSWORD type:', typeof process.env.DB_PASSWORD);
+
             // Run Migrations (now that we have the password)
             try {
                 console.log('Running database migrations...');
-                const { stdout, stderr } = await execAsync('npx sequelize-cli db:migrate');
+                // Explicitly pass process.env to the child process
+                const { stdout, stderr } = await execAsync('npx sequelize-cli db:migrate', { env: process.env });
                 console.log('Migrations stdout:', stdout);
                 if (stderr) console.log('Migrations stderr:', stderr);
 
                 console.log('Running database seeds...');
-                const { stdout: seedStdout, stderr: seedStderr } = await execAsync('npx sequelize-cli db:seed:all');
+                const { stdout: seedStdout, stderr: seedStderr } = await execAsync('npx sequelize-cli db:seed:all', { env: process.env });
                 console.log('Seeds stdout:', seedStdout);
                 if (seedStderr) console.log('Seeds stderr:', seedStderr);
-
             } catch (error) {
                 console.error('Migration failed:', error);
                 // Fail hard if migrations fail
