@@ -36,14 +36,21 @@ const start = async () => {
                 console.log('Migrations stdout:', stdout);
                 if (stderr) console.log('Migrations stderr:', stderr);
 
+            } catch (error) {
+                console.error('Migration failed:', error);
+                // Fail hard if migrations fail
+                process.exit(1);
+            }
+
+            // Run Seeds (separately, so if they fail due to duplicates, we don't crash)
+            try {
                 console.log('Running database seeds...');
                 const { stdout: seedStdout, stderr: seedStderr } = await execAsync('npx sequelize-cli db:seed:all', { env: process.env });
                 console.log('Seeds stdout:', seedStdout);
                 if (seedStderr) console.log('Seeds stderr:', seedStderr);
             } catch (error) {
-                console.error('Migration failed:', error);
-                // Fail hard if migrations fail
-                process.exit(1);
+                console.warn('Seeding failed (likely duplicate data), continuing startup:', error.message);
+                // Do NOT exit, just continue
             }
         } else {
             console.warn('Could not fetch secrets, falling back to environment variables.');
