@@ -26,6 +26,7 @@ services:
       # DB_PASSWORD: ...
       # JWT_SECRET: ...
       CORS_ORIGIN: "http://${EC2_HOST}:80"
+    command: npm start
     logging:
       driver: awslogs
       options:

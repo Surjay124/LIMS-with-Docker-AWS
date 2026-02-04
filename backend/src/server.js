@@ -1,5 +1,9 @@
 import dotenv from 'dotenv';
 import { getSecret } from './utils/secrets.js';
+import { exec } from 'child_process';
+import util from 'util';
+
+const execAsync = util.promisify(exec);
 
 dotenv.config();
 
@@ -20,6 +24,24 @@ const start = async () => {
             Object.keys(secrets).forEach(key => {
                 process.env[key] = secrets[key];
             });
+
+            // Run Migrations (now that we have the password)
+            try {
+                console.log('Running database migrations...');
+                const { stdout, stderr } = await execAsync('npx sequelize-cli db:migrate');
+                console.log('Migrations stdout:', stdout);
+                if (stderr) console.log('Migrations stderr:', stderr);
+
+                console.log('Running database seeds...');
+                const { stdout: seedStdout, stderr: seedStderr } = await execAsync('npx sequelize-cli db:seed:all');
+                console.log('Seeds stdout:', seedStdout);
+                if (seedStderr) console.log('Seeds stderr:', seedStderr);
+
+            } catch (error) {
+                console.error('Migration failed:', error);
+                // Fail hard if migrations fail
+                process.exit(1);
+            }
         } else {
             console.warn('Could not fetch secrets, falling back to environment variables.');
         }
